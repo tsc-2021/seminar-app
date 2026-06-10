@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>セミナーテーマ提案 | 相続不動産実務</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a18;
+      --ink-mid: #4a4a46;
+      --ink-light: #8a8a84;
+      --paper: #f7f5f0;
+      --paper-mid: #eceae3;
+      --paper-dark: #dddad0;
+      --accent: #1d4e3a;
+      --accent-light: #e8f0ec;
+      --accent-mid: #2d6e52;
+      --border: rgba(26,26,24,0.12);
+      --radius: 4px;
+    }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 2.5rem 1.5rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-left {}
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-mid);
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .header-meta {
+      font-size: 12px;
+      color: var(--ink-light);
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+    }
+
+    .form-panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--ink-mid);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--paper-dark);
+      border-radius: var(--radius);
+      background: var(--paper);
+      font-size: 14px;
+      color: var(--ink);
+      font-family: inherit;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238a8a84' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .field select:hover,
+    .field input:hover { border-color: var(--accent-mid); }
+    .field select:focus,
+    .field input:focus { outline: none; border-color: var(--accent); }
+
+    .generate-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 11px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .generate-btn:hover { background: var(--accent-mid); }
+    .generate-btn:active { transform: scale(0.98); }
+    .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .generate-btn svg { flex-shrink: 0; }
+
+    .loading {
+      display: none;
+      padding: 3rem 0;
+      text-align: center;
+      color: var(--ink-light);
+      font-size: 14px;
+    }
+
+    .loading-dots::after {
+      content: '';
+      animation: dots 1.2s steps(3, end) infinite;
+    }
+
+    @keyframes dots {
+      0% { content: ''; }
+      33% { content: '.'; }
+      66% { content: '..'; }
+      100% { content: '...'; }
+    }
+
+    .results { display: none; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .results-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .regen-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--ink-mid);
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+
+    .regen-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .theme-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .theme-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: border-color 0.15s;
+    }
+
+    .theme-card:hover { border-color: var(--accent); }
+
+    .theme-number {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent-mid);
+      min-width: 20px;
+      padding-top: 3px;
+    }
+
+    .theme-body { flex: 1; }
+
+    .theme-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .theme-subtitle {
+      font-size: 13px;
+      color: var(--ink-mid);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .theme-point {
+      display: inline-block;
+      font-size: 11px;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+
+    .save-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--ink-light);
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .save-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .save-btn.saved { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+
+    .saved-section {
+      display: none;
+      margin-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+    }
+
+    .saved-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .saved-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      font-size: 12px;
+      color: var(--ink-light);
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+    }
+
+    .clear-btn:hover { color: #c0392b; }
+
+    .saved-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .saved-item {
+      background: var(--paper-mid);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .saved-item-info {}
+
+    .saved-item-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .saved-item-meta {
+      font-size: 12px;
+      color: var(--ink-light);
+      margin-top: 2px;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: var(--ink-light);
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .remove-btn:hover { color: #c0392b; }
+
+    .error-msg {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #c0392b;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 1.5rem 1.25rem 1.25rem; flex-direction: column; align-items: flex-start; }
+      .header-meta { text-align: left; }
+      main { padding: 1.5rem 1.25rem; }
+      .form-panel { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <p class="eyebrow">相続不動産実務</p>
+    <h1>セミナーテーマ提案</h1>
+  </div>
+  <div class="header-meta">
+    士業 × 士業<br>登壇者向けテーマ生成
+  </div>
+</header>
+
+<main>
+  <div class="form-panel">
+    <div class="form-grid">
+      <div class="field">
+        <label>登壇する士業</label>
+        <select id="speaker">
+          <option value="宅地建物取引士">宅地建物取引士</option>
+          <option value="税理士">税理士</option>
+          <option value="司法書士">司法書士</option>
+          <option value="行政書士">行政書士</option>
+          <option value="弁護士">弁護士</option>
+          <option value="土地家屋調査士">土地家屋調査士</option>
+          <option value="不動産鑑定士">不動産鑑定士</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>対象参加者</label>
+        <select id="audience">
+          <option value="司法書士">司法書士</option>
+          <option value="税理士">税理士</option>
+          <option value="弁護士">弁護士</option>
+          <option value="行政書士">行政書士</option>
+          <option value="全士業（複合）">全士業（複合）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>テーマの切り口</label>
+        <select id="angle">
+          <option value="実務連携・協働">実務連携・協働</option>
+          <option value="最新法改正対応">最新法改正対応</option>
+          <option value="トラブル事例と対策">トラブル事例と対策</option>
+          <option value="顧客獲得・マーケティング">顧客獲得・マーケティング</option>
+          <option value="税務と登記の連携">税務と登記の連携</option>
+        </select>
+      </div>
+    </div>
+    <button class="generate-btn" id="generateBtn" onclick="generateThemes()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1.5L9.5 6H14L10.5 8.5L11.5 13L8 10.5L4.5 13L5.5 8.5L2 6H6.5L8 1.5Z" fill="white"/>
+      </svg>
+      テーマを提案する
+    </button>
+    <div class="error-msg" id="errorMsg">エラーが発生しました。もう一度お試しください。</div>
+  </div>
+
+  <div class="loading" id="loading">
+    <p class="loading-dots">AIがテーマを考えています</p>
+  </div>
+
+  <div class="results" id="results">
+    <div class="results-header">
+      <span class="results-label">提案テーマ</span>
+      <button class="regen-btn" onclick="generateThemes()">↺ 再提案</button>
+    </div>
+    <div class="theme-list" id="themeList"></div>
+  </div>
+
+  <div class="saved-section" id="savedSection">
+    <div class="saved-section-header">
+      <span class="saved-label">保存したテーマ</span>
+      <button class="clear-btn" onclick="clearSaved()">すべて削除</button>
+    </div>
+    <div class="saved-list" id="savedList"></div>
+  </div>
+</main>
+
+<script>
+  let saved = JSON.parse(localStorage.getItem('savedThemes') || '[]');
+  let currentThemes = [];
+
+  renderSaved();
+
+  async function generateThemes() {
+    const speaker = document.getElementById('speaker').value;
+    const audience = document.getElementById('audience').value;
+    const angle = document.getElementById('angle').value;
+    const btn = document.getElementById('generateBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    errorMsg.style.display = 'none';
+    btn.disabled = true;
+
+    const prompt = `あなたは士業向けセミナーの企画専門家です。
+以下の条件で、相続不動産に関わる実務的なセミナーテーマを5つ提案してください。
+
+登壇者：${speaker}
+参加対象：${audience}
+テーマの切り口：${angle}
+
+各テーマについて以下をJSON配列で返してください（JSONのみ、説明文・バッククォート不要）：
+[
+  {
+    "title": "セミナータイトル（20〜35文字程度）",
+    "subtitle": "サブタイトルまたは一言説明（30〜45文字）",
+    "point": "このテーマを選ぶべき理由（20〜30文字）"
+  }
+]`;
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'API error');
+
+      const clean = data.text.replace(/```json|```/g, '').trim();
+      const themes = JSON.parse(clean);
+      currentThemes = themes;
+      renderThemes(themes, speaker, audience);
+    } catch (e) {
+      console.error(e);
+      errorMsg.style.display = 'block';
+      document.getElementById('loading').style.display = 'none';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function renderThemes(themes, speaker, audience) {
+    document.getElementById('loading').style.display = 'none';
+    const list = document.getElementById('themeList');
+    list.innerHTML = '';
+
+    themes.forEach((t, i) => {
+      const isSaved = saved.some(s => s.title === t.title);
+      const card = document.createElement('div');
+      card.className = 'theme-card';
+      card.innerHTML = `
+        <span class="theme-number">0${i + 1}</span>
+        <div class="theme-body">
+          <p class="theme-title">${t.title}</p>
+          <p class="theme-subtitle">${t.subtitle}</p>
+          <span class="theme-point">${t.point}</span>
+        </div>
+        <button class="save-btn${isSaved ? ' saved' : ''}" onclick="toggleSave(this, ${i}, '${esc(speaker)}', '${esc(audience)}')">
+          ${isSaved ? '✓ 保存済み' : '＋ 保存'}
+        </button>
+      `;
+      list.appendChild(card);
+    });
+
+    document.getElementById('results').style.display = 'block';
+  }
+
+  function toggleSave(btn, idx, speaker, audience) {
+    const t = currentThemes[idx];
+    const existingIdx = saved.findIndex(s => s.title === t.title);
+    if (existingIdx >= 0) {
+      saved.splice(existingIdx, 1);
+      btn.textContent = '＋ 保存';
+      btn.classList.remove('saved');
+    } else {
+      saved.push({ title: t.title, subtitle: t.subtitle, speaker, audience });
+      btn.textContent = '✓ 保存済み';
+      btn.classList.add('saved');
+    }
+    localStorage.setItem('savedThemes', JSON.stringify(saved));
+    renderSaved();
+  }
+
+  function renderSaved() {
+    const section = document.getElementById('savedSection');
+    const list = document.getElementById('savedList');
+    if (saved.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    list.innerHTML = '';
+    saved.forEach((s, i) => {
+      const item = document.createElement('div');
+      item.className = 'saved-item';
+      item.innerHTML = `
+        <div class="saved-item-info">
+          <p class="saved-item-title">${s.title}</p>
+          <p class="saved-item-meta">${s.speaker} → ${s.audience}</p>
+        </div>
+        <button class="remove-btn" onclick="removeSaved(${i})" title="削除">×</button>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  function removeSaved(idx) {
+    saved.splice(idx, 1);
+    localStorage.setItem('savedThemes', JSON.stringify(saved));
+    renderSaved();
+  }
+
+  function clearSaved() {
+    if (!confirm('保存済みのテーマをすべて削除しますか？')) return;
+    saved = [];
+    localStorage.setItem('savedThemes', JSON.stringify(saved));
+    renderSaved();
+  }
+
+  function esc(s) { return s.replace(/'/g, "\\'"); }
+</script>
+</body>
+</html>
